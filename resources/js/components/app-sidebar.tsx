@@ -16,17 +16,26 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
+import services from '@/routes/services';
 
 export function AppSidebar() {
     const page = usePage();
     const dashboardUrl = page.props.currentTeam
         ? dashboard(page.props.currentTeam.slug)
         : '/';
+    const servicesUrl = page.props.currentTeam
+        ? services.index(page.props.currentTeam.slug)
+        : '/';
 
     const mainNavItems: NavItem[] = [
         {
             title: 'Dashboard',
             href: dashboardUrl,
+            icon: LayoutGrid,
+        },
+        {
+            title: 'Services',
+            href: servicesUrl,
             icon: LayoutGrid,
         },
     ];
