@@ -39,7 +39,7 @@ export default function Index({
                     filters={filters}
                     actionButtons={
                         <Link
-                            href={create({ current_team: currentTeam.slug })}
+                            href={create([currentTeam.slug])}
                             className={buttonVariants()}
                         >
                             Create new

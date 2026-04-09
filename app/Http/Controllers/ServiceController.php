@@ -6,6 +6,7 @@ use App\Actions\Services\ListServices;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use function Termwind\render;
 
 class ServiceController extends Controller
 {
@@ -15,6 +16,11 @@ class ServiceController extends Controller
             $request->user()->currentTeam,
             $request->query()
         ));
+    }
+
+    public function create()
+    {
+        return Inertia::render('services/create');
     }
 
     public function store(Request $request)
