@@ -7,27 +7,15 @@ import { Head, Link } from '@inertiajs/react';
 import { create, index } from '@/routes/services';
 import { DataTable } from '@/components/data-table';
 import { columns } from './columns';
+import { filterDefinitions } from './filter-definitions';
 
 interface IndexProps {
-    team: Team;
+    currentTeam: Team;
     services: PaginatedResponse<Service>;
     filters: Record<string, any>
 }
 
-export default function Index({ team, services, filters }: IndexProps) {
-    const filterDefinitions = [
-        {
-            key: "name",
-            label: "Name",
-            type: "text" as const,
-        },
-        {
-            key: "service_type",
-            label: "Service Type",
-            type: "text" as const
-        }
-    ]
-
+export default function Index({ currentTeam, services, filters }: IndexProps) {
     return (
         <>
             <Head title="Services" />
@@ -36,12 +24,12 @@ export default function Index({ team, services, filters }: IndexProps) {
                     <Heading
                         variant="small"
                         title="Services"
-                        description={`Manage the services offered by ${team.name}.`}
+                        description={`Manage the services offered by ${currentTeam.name}.`}
                     />
                 </div>
 
                 <div className="flex items-center justify-end my-4">
-                    <Link href={create({ current_team: team.slug })} className={buttonVariants({ variant: "default", size: "sm" })}>
+                    <Link href={create({ current_team: currentTeam.slug })} className={buttonVariants({ variant: "default", size: "sm" })}>
                         Create new
                     </Link>
                 </div>
@@ -57,11 +45,13 @@ export default function Index({ team, services, filters }: IndexProps) {
     );
 }
 
-Index.layout = (props: { team: { name: string; slug: string } }) => ({
-    breadcrumbs: [
-        {
-            title: 'Services',
-            href: index({ current_team: props.team.slug }),
-        },
-    ],
-});
+Index.layout = (props: { currentTeam: { name: string; slug: string } }) => (
+    {
+        breadcrumbs: [
+            {
+                title: 'Services',
+                href: index({ current_team: props.currentTeam.slug }),
+            },
+        ],
+    }
+)

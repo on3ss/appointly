@@ -42,7 +42,7 @@ export function DataTableFilters({
                         Filters
                     </Button>
                 </PopoverTrigger>
-                <PopoverContent align="start" alignOffset={4} className="w-[500px] max-h-[600px] overflow-y-auto">
+                <PopoverContent align="start" alignOffset={4} className="w-[90vw] max-w-[500px] max-h-[600px] overflow-y-auto">
                     <div className="flex flex-col gap-4">
                         {filterDefinitions.map((filter) => (
                             <div key={filter.key} className="flex flex-col gap-1">
@@ -52,6 +52,7 @@ export function DataTableFilters({
 
                                 {filter.type === "text" && (
                                     <Input
+                                        className="w-full"
                                         value={filters[filter.key] ?? ""}
                                         placeholder={filter.label}
                                         onChange={(e) =>
@@ -73,7 +74,7 @@ export function DataTableFilters({
                                             }))
                                         }
                                     >
-                                        <SelectTrigger>
+                                        <SelectTrigger className="w-full">
                                             <SelectValue placeholder={`Select ${filter.label}`} />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -88,6 +89,7 @@ export function DataTableFilters({
 
                                 {filter.type === "multi-select" && (
                                     <MultiSelectFilter
+                                        className="w-full"
                                         label={filter.label}
                                         value={filters[filter.key] ?? []}
                                         options={filter.options ?? []}
@@ -120,6 +122,7 @@ export function DataTableFilters({
                                 {filter.type === "date" && (
                                     <Input
                                         type="date"
+                                        className="w-full"
                                         value={filters[filter.key] ?? ""}
                                         onChange={(e) =>
                                             setFilters((prev) => ({

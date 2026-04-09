@@ -5,17 +5,30 @@ namespace App\Http\Controllers;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class ServiceController extends Controller
 {
     public function index()
     {
-        $services = Service::where('team_id', auth()->user()->currentTeam->id)
-            ->paginate(15);
+        $services = QueryBuilder::for(Service::class)
+            ->where('team_id', auth()->user()->currentTeam->id)
+            ->allowedFilters(
+                AllowedFilter::partial('name'),
+                AllowedFilter::exact('service_type'),
+                AllowedFilter::exact('allowed_modes'),
+                AllowedFilter::partial('contact_phone'),
+                AllowedFilter::partial('contact_email'),
+                AllowedFilter::exact('is_active'),
+            )
+            ->allowedSorts('name', 'price', 'allowed_modes', 'is_active')
+            ->defaultSort('created_at')
+            ->paginate(request()->input('per_page'))
+            ->appends(request()->query());
 
         return Inertia::render('services/index', [
-            'services' => $services,
-            'team' => auth()->user()->currentTeam // Ensure team is passed to the frontend
+            'services' => $services
         ]);
     }
 

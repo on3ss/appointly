@@ -21,6 +21,7 @@ interface MultiSelectFilterProps {
     value: string[]
     options: Option[]
     onChange: (next: string[]) => void
+    className?: string  // added
 }
 
 export function MultiSelectFilter({
@@ -28,6 +29,7 @@ export function MultiSelectFilter({
     value,
     options,
     onChange,
+    className,
 }: MultiSelectFilterProps) {
     const selected = useMemo(() => new Set(value ?? []), [value])
 
@@ -38,7 +40,7 @@ export function MultiSelectFilter({
                     variant="outline"
                     role="combobox"
                     aria-label={`Multi-select ${label}`}
-                    className="justify-between"
+                    className={cn("justify-between", className)}
                 >
                     {value?.length ? `${value.length} selected` : `Select ${label}`}
                     <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
