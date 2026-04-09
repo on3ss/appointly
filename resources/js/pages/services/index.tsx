@@ -11,11 +11,11 @@ import { TableSchema } from '@/types/table-schema';
 interface IndexProps {
     currentTeam: Team;
     services: PaginatedResponse<Service>;
-    tableSchema: TableSchema;
+    table: TableSchema;
     filters: Record<string, any>;
 }
 
-export default function Index({ currentTeam, services, tableSchema, filters }: IndexProps) {
+export default function Index({ currentTeam, services, table, filters }: IndexProps) {
     return (
         <>
             <Head title="Services" />
@@ -29,7 +29,7 @@ export default function Index({ currentTeam, services, tableSchema, filters }: I
                 </div>
 
                 <ResourceTable
-                schema={tableSchema}
+                schema={table}
                 data={services}
                 filters={filters}
                 actionButtons={

@@ -3,53 +3,29 @@
 namespace App\Http\Controllers;
 
 use App\Models\Service;
-use App\Tables\ServiceTableSchema;
+use App\Tables\ServiceTable;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class ServiceController extends Controller
 {
     public function index()
     {
-        $schema = ServiceTableSchema::get();
+        $table = ServiceTable::define();
 
         $query = QueryBuilder::for(Service::class)
             ->where('team_id', auth()->user()->currentTeam->id);
 
-        // Build filters
-        $filters = collect($schema['columns'])
-            ->filter(fn($col) => $col['filterable'] ?? false)
-            ->map(function ($col) {
-                $key = $col['key'];
-                return match ($col['filterType'] ?? 'text') {
-                    'select' => AllowedFilter::exact($key),
-                    default => AllowedFilter::partial($key),
-                };
-            })
-            ->values()
-            ->all();
+        $query = $table->applyToQuery($query);
 
-        $query->allowedFilters(...$filters);
-
-        // Build sorts
-        $sortable = collect($schema['columns'])
-            ->filter(fn($col) => $col['sortable'] ?? false)
-            ->pluck('key')
-            ->all();
-
-        $query->allowedSorts(...$sortable);
-
-        $defaultSort = $schema['defaultSort']['key'] ?? 'created_at';
-        $query->defaultSort($defaultSort);
-
-        $services = $query->paginate(request()->input('per_page'))
+        $services = $query
+            ->paginate(request()->input('per_page', 10))
             ->appends(request()->query());
 
         return Inertia::render('services/index', [
             'services' => $services,
-            'tableSchema' => $schema,
+            'table' => $table->toArray(),   // Pass as 'table' instead of 'tableSchema'
             'filters' => request()->input('filter', []),
         ]);
     }
