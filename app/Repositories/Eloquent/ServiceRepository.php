@@ -6,8 +6,8 @@ use App\Models\Service;
 use App\Models\Team;
 use App\Repositories\Contracts\ServiceRepositoryInterface;
 use App\Tables\Schemas\ServiceTableSchema;
-use Spatie\QueryBuilder\QueryBuilder;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class ServiceRepository implements ServiceRepositoryInterface
 {

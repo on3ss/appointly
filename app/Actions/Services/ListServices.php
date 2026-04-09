@@ -10,8 +10,7 @@ class ListServices
 {
     public function __construct(
         protected ServiceRepositoryInterface $repository
-    ) {
-    }
+    ) {}
 
     public function handle(Team $team, array $options = []): array
     {
