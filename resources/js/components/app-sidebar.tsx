@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
-import services from '@/routes/services';
+import { index as serviceIndex } from '@/routes/services';
 
 export function AppSidebar() {
     const page = usePage();
@@ -24,7 +24,7 @@ export function AppSidebar() {
         ? dashboard(page.props.currentTeam.slug)
         : '/';
     const servicesUrl = page.props.currentTeam
-        ? services.index(page.props.currentTeam.slug)
+        ? serviceIndex(page.props.currentTeam.slug)
         : '/';
 
     const mainNavItems: NavItem[] = [
