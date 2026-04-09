@@ -4,7 +4,7 @@ import {
     index as servicesIndex,
     create as servicesCreate,
 } from '@/routes/services';
-import ServiceForm from './partials/service-form';
+import ServiceForm from './components/service-form';
 
 export default function Create() {
     return (

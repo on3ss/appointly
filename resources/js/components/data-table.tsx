@@ -29,7 +29,7 @@ import { useMemo, useCallback, useState, useEffect } from 'react';
 import { useDebounceValue } from 'usehooks-ts';
 import { CircleX } from 'lucide-react';
 
-interface BulkAction<TData> {
+export interface BulkAction<TData> {
     label: string;
     onClick: (selectedRows: TData[]) => void;
     variant?: 'default' | 'destructive' | 'outline';
@@ -44,7 +44,7 @@ interface DataTableProps<TData, TValue> {
     bulkActions?: BulkAction<TData>[];
     defaultHiddenColumns?: string[];
     noResultsMessage?: React.ReactNode;
-    actionButtons?: React.ReactNode; // Add this line
+    actionButtons?: React.ReactNode;
 }
 
 export function DataTable<TData, TValue>({
@@ -62,7 +62,7 @@ export function DataTable<TData, TValue>({
             </div>
         </div>
     ),
-    actionButtons, // Add this line
+    actionButtons,
 }: DataTableProps<TData, TValue>) {
     const initialColumnVisibility = useMemo(() => {
         return defaultHiddenColumns.reduce(
@@ -187,8 +187,8 @@ export function DataTable<TData, TValue>({
                     )}
                 </div>
                 <div className="flex items-center gap-2">
-                    {actionButtons}
                     <DataTableViewOptions table={table} />
+                    {actionButtons}
                 </div>
             </div>
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Service;
+use App\Tables\ServiceTableSchema;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Spatie\QueryBuilder\AllowedFilter;
@@ -12,23 +13,44 @@ class ServiceController extends Controller
 {
     public function index()
     {
-        $services = QueryBuilder::for(Service::class)
-            ->where('team_id', auth()->user()->currentTeam->id)
-            ->allowedFilters(
-                AllowedFilter::partial('name'),
-                AllowedFilter::exact('service_type'),
-                AllowedFilter::exact('allowed_modes'),
-                AllowedFilter::partial('contact_phone'),
-                AllowedFilter::partial('contact_email'),
-                AllowedFilter::exact('is_active'),
-            )
-            ->allowedSorts('name', 'price', 'allowed_modes', 'is_active')
-            ->defaultSort('created_at')
-            ->paginate(request()->input('per_page'))
+        $schema = ServiceTableSchema::get();
+
+        $query = QueryBuilder::for(Service::class)
+            ->where('team_id', auth()->user()->currentTeam->id);
+
+        // Build filters
+        $filters = collect($schema['columns'])
+            ->filter(fn($col) => $col['filterable'] ?? false)
+            ->map(function ($col) {
+                $key = $col['key'];
+                return match ($col['filterType'] ?? 'text') {
+                    'select' => AllowedFilter::exact($key),
+                    default => AllowedFilter::partial($key),
+                };
+            })
+            ->values()
+            ->all();
+
+        $query->allowedFilters(...$filters);
+
+        // Build sorts
+        $sortable = collect($schema['columns'])
+            ->filter(fn($col) => $col['sortable'] ?? false)
+            ->pluck('key')
+            ->all();
+
+        $query->allowedSorts(...$sortable);
+
+        $defaultSort = $schema['defaultSort']['key'] ?? 'created_at';
+        $query->defaultSort($defaultSort);
+
+        $services = $query->paginate(request()->input('per_page'))
             ->appends(request()->query());
 
         return Inertia::render('services/index', [
             'services' => $services,
+            'tableSchema' => $schema,
+            'filters' => request()->input('filter', []),
         ]);
     }
 

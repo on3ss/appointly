@@ -5,17 +5,17 @@ import { Service } from '@/types/resource';
 import { PaginatedResponse } from '@/types/response';
 import { Head, Link } from '@inertiajs/react';
 import { create, index } from '@/routes/services';
-import { DataTable } from '@/components/data-table';
-import { columns } from './columns';
-import { filterDefinitions } from './filter-definitions';
+import { ResourceTable } from '@/components/resource-table';
+import { TableSchema } from '@/types/table-schema';
 
 interface IndexProps {
     currentTeam: Team;
     services: PaginatedResponse<Service>;
+    tableSchema: TableSchema;
     filters: Record<string, any>;
 }
 
-export default function Index({ currentTeam, services, filters }: IndexProps) {
+export default function Index({ currentTeam, services, tableSchema, filters }: IndexProps) {
     return (
         <>
             <Head title="Services" />
@@ -28,24 +28,16 @@ export default function Index({ currentTeam, services, filters }: IndexProps) {
                     />
                 </div>
 
-                <div className="my-4 flex items-center justify-end">
-                    <Link
-                        href={create({ current_team: currentTeam.slug })}
-                        className={buttonVariants({
-                            variant: 'default',
-                            size: 'sm',
-                        })}
-                    >
+                <ResourceTable
+                schema={tableSchema}
+                data={services}
+                filters={filters}
+                actionButtons={
+                    <Link href={create({ current_team: currentTeam.slug })} className={buttonVariants()}>
                         Create new
                     </Link>
-                </div>
-
-                <DataTable
-                    columns={columns}
-                    paginatedData={services}
-                    filters={filters}
-                    filterDefinitions={filterDefinitions}
-                />
+                }
+            />
             </div>
         </>
     );
