@@ -2,33 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Services\ListServices;
 use App\Models\Service;
-use App\Tables\Schemas\ServiceTableSchema;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Spatie\QueryBuilder\QueryBuilder;
 
 class ServiceController extends Controller
 {
-    public function index()
+    public function index(Request $request, ListServices $listServices)
     {
-        $schema = new ServiceTableSchema;
-
-        $baseQuery = Service::query()
-            ->where('team_id', auth()->user()->currentTeam->id);
-
-        $query = QueryBuilder::for($baseQuery);
-        $query = $schema->applyToQuery($query);
-
-        $services = $query
-            ->paginate(request()->input('per_page', 10))
-            ->appends(request()->query());
-
-        return Inertia::render('services/index', [
-            'services' => $services,
-            'table' => $schema->toArray(),
-            'filters' => request()->input('filter', []),
-        ]);
+        return Inertia::render('services/index', $listServices->handle(
+            $request->user()->currentTeam,
+            $request->query()
+        ));
     }
 
     public function store(Request $request)
