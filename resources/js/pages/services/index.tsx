@@ -12,7 +12,7 @@ import { filterDefinitions } from './filter-definitions';
 interface IndexProps {
     currentTeam: Team;
     services: PaginatedResponse<Service>;
-    filters: Record<string, any>
+    filters: Record<string, any>;
 }
 
 export default function Index({ currentTeam, services, filters }: IndexProps) {
@@ -28,8 +28,14 @@ export default function Index({ currentTeam, services, filters }: IndexProps) {
                     />
                 </div>
 
-                <div className="flex items-center justify-end my-4">
-                    <Link href={create({ current_team: currentTeam.slug })} className={buttonVariants({ variant: "default", size: "sm" })}>
+                <div className="my-4 flex items-center justify-end">
+                    <Link
+                        href={create({ current_team: currentTeam.slug })}
+                        className={buttonVariants({
+                            variant: 'default',
+                            size: 'sm',
+                        })}
+                    >
                         Create new
                     </Link>
                 </div>
@@ -45,13 +51,11 @@ export default function Index({ currentTeam, services, filters }: IndexProps) {
     );
 }
 
-Index.layout = (props: { currentTeam: { name: string; slug: string } }) => (
-    {
-        breadcrumbs: [
-            {
-                title: 'Services',
-                href: index({ current_team: props.currentTeam.slug }),
-            },
-        ],
-    }
-)
+Index.layout = (props: { currentTeam: { name: string; slug: string } }) => ({
+    breadcrumbs: [
+        {
+            title: 'Services',
+            href: index({ current_team: props.currentTeam.slug }),
+        },
+    ],
+});

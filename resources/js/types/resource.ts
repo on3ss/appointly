@@ -29,7 +29,7 @@ export interface Service {
     is_recurring_allowed: boolean;
     requires_membership: boolean;
     is_active: boolean;
-    created_at: string;   // ISO datetime
+    created_at: string; // ISO datetime
     updated_at: string;
     deleted_at: string | null;
     // Optional fields from Spatie Media Library (accessors)

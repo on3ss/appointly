@@ -1,6 +1,9 @@
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
-import { index as servicesIndex, create as servicesCreate } from '@/routes/services';
+import {
+    index as servicesIndex,
+    create as servicesCreate,
+} from '@/routes/services';
 import ServiceForm from './partials/service-form';
 
 export default function Create() {
@@ -14,7 +17,7 @@ export default function Create() {
                     title="Create Service"
                     description="Add a new service to your provider"
                 />
-                <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                     <div className="p-6">
                         <ServiceForm />
                     </div>

@@ -28,7 +28,7 @@ class ServiceController extends Controller
             ->appends(request()->query());
 
         return Inertia::render('services/index', [
-            'services' => $services
+            'services' => $services,
         ]);
     }
 

@@ -1,32 +1,32 @@
-import { Table } from "@tanstack/react-table"
+import { Table } from '@tanstack/react-table';
 import {
     ChevronLeft,
     ChevronRight,
     ChevronsLeft,
     ChevronsRight,
-} from "lucide-react"
+} from 'lucide-react';
 
-import { Button } from "@/components/ui/button"
+import { Button } from '@/components/ui/button';
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select"
+} from '@/components/ui/select';
 
 interface ServerPagination {
-    currentPage: number
-    lastPage: number
-    perPage: number
-    total: number
-    onPageChange: (page: number) => void
-    onPerPageChange?: (perPage: number) => void
+    currentPage: number;
+    lastPage: number;
+    perPage: number;
+    total: number;
+    onPageChange: (page: number) => void;
+    onPerPageChange?: (perPage: number) => void;
 }
 
 interface DataTablePaginationProps<TData> {
-    table: Table<TData>,
-    pagination: ServerPagination
+    table: Table<TData>;
+    pagination: ServerPagination;
 }
 
 export function DataTablePagination<TData>({
@@ -40,21 +40,23 @@ export function DataTablePagination<TData>({
         total,
         onPageChange,
         onPerPageChange,
-    } = pagination
+    } = pagination;
 
-    const paginationRange = getPaginationRange(currentPage, lastPage)
+    const paginationRange = getPaginationRange(currentPage, lastPage);
 
     return (
-        <div className="flex items-center justify-between px-2 my-4 flex-wrap gap-4">
+        <div className="my-4 flex flex-wrap items-center justify-between gap-4 px-2">
             <div className="flex-1 text-sm text-muted-foreground">
                 {table.getFilteredSelectedRowModel().rows.length > 0 ? (
                     <>
-                        {table.getFilteredSelectedRowModel().rows.length} row(s) selected.
+                        {table.getFilteredSelectedRowModel().rows.length} row(s)
+                        selected.
                     </>
                 ) : (
                     <>
-                        Showing {(currentPage - 1) * perPage + 1} to{" "}
-                        {Math.min(currentPage * perPage, total)} of {total} results.
+                        Showing {(currentPage - 1) * perPage + 1} to{' '}
+                        {Math.min(currentPage * perPage, total)} of {total}{' '}
+                        results.
                     </>
                 )}
             </div>
@@ -64,14 +66,19 @@ export function DataTablePagination<TData>({
                     <p className="text-sm font-medium">Rows per page</p>
                     <Select
                         value={`${perPage}`}
-                        onValueChange={(value) => onPerPageChange?.(Number(value))}
+                        onValueChange={(value) =>
+                            onPerPageChange?.(Number(value))
+                        }
                     >
                         <SelectTrigger className="h-8 w-[70px]">
                             <SelectValue placeholder={perPage} />
                         </SelectTrigger>
                         <SelectContent side="top">
                             {[5, 10, 15, 20, 30, 50].map((pageSize) => (
-                                <SelectItem key={pageSize} value={`${pageSize}`}>
+                                <SelectItem
+                                    key={pageSize}
+                                    value={`${pageSize}`}
+                                >
                                     {pageSize}
                                 </SelectItem>
                             ))}
@@ -97,7 +104,7 @@ export function DataTablePagination<TData>({
                     </Button>
 
                     {paginationRange.map((page, index) =>
-                        page === "..." ? (
+                        page === '...' ? (
                             <span
                                 // FIX HERE: Use a unique key for "..."
                                 // Combine index with a distinct string to avoid conflicts with page numbers
@@ -109,13 +116,15 @@ export function DataTablePagination<TData>({
                         ) : (
                             <Button
                                 key={page} // This is correct, page numbers are unique
-                                variant={page === currentPage ? "default" : "outline"}
+                                variant={
+                                    page === currentPage ? 'default' : 'outline'
+                                }
                                 className="h-8 w-8 p-0"
                                 onClick={() => onPageChange(Number(page))}
                             >
                                 {page}
                             </Button>
-                        )
+                        ),
                     )}
 
                     <Button
@@ -137,32 +146,35 @@ export function DataTablePagination<TData>({
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
-function getPaginationRange(current: number, total: number): (number | string)[] {
-    const delta = 2 // Number of pages around the current page
-    const range: (number | string)[] = []
-    const left = Math.max(2, current - delta)
-    const right = Math.min(total - 1, current + delta)
+function getPaginationRange(
+    current: number,
+    total: number,
+): (number | string)[] {
+    const delta = 2; // Number of pages around the current page
+    const range: (number | string)[] = [];
+    const left = Math.max(2, current - delta);
+    const right = Math.min(total - 1, current + delta);
 
-    range.push(1)
+    range.push(1);
 
     if (left > 2) {
-        range.push("...")
+        range.push('...');
     }
 
     for (let i = left; i <= right; i++) {
-        range.push(i)
+        range.push(i);
     }
 
     if (right < total - 1) {
-        range.push("...")
+        range.push('...');
     }
 
     if (total > 1) {
-        range.push(total)
+        range.push(total);
     }
 
-    return range
+    return range;
 }

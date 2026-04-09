@@ -1,14 +1,14 @@
-import { X } from "lucide-react"
+import { X } from 'lucide-react';
 
 interface FilterChipProps {
-    label: string
-    value: string
-    onRemove: () => void
+    label: string;
+    value: string;
+    onRemove: () => void;
 }
 
 export function FilterChip({ label, value, onRemove }: FilterChipProps) {
     return (
-        <div className="px-2 py-1 text-sm rounded bg-muted flex items-center gap-1">
+        <div className="flex items-center gap-1 rounded bg-muted px-2 py-1 text-sm">
             <span className="text-muted-foreground">
                 {label}: {value}
             </span>
@@ -21,5 +21,5 @@ export function FilterChip({ label, value, onRemove }: FilterChipProps) {
                 <X className="h-3 w-3" />
             </button>
         </div>
-    )
+    );
 }

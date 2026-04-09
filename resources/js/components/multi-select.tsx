@@ -1,27 +1,27 @@
-import { useMemo } from "react"
-import { Button } from "./ui/button"
-import { Popover, PopoverTrigger, PopoverContent } from "./ui/popover"
-import { ChevronDown, Check } from "lucide-react"
+import { useMemo } from 'react';
+import { Button } from './ui/button';
+import { Popover, PopoverTrigger, PopoverContent } from './ui/popover';
+import { ChevronDown, Check } from 'lucide-react';
 import {
     Command,
     CommandGroup,
     CommandItem,
     CommandInput,
     CommandEmpty,
-} from "./ui/command"
-import { cn } from "@/lib/utils"
+} from './ui/command';
+import { cn } from '@/lib/utils';
 
 interface Option {
-    label: string
-    value: string
+    label: string;
+    value: string;
 }
 
 interface MultiSelectFilterProps {
-    label: string
-    value: string[]
-    options: Option[]
-    onChange: (next: string[]) => void
-    className?: string  // added
+    label: string;
+    value: string[];
+    options: Option[];
+    onChange: (next: string[]) => void;
+    className?: string; // added
 }
 
 export function MultiSelectFilter({
@@ -31,7 +31,7 @@ export function MultiSelectFilter({
     onChange,
     className,
 }: MultiSelectFilterProps) {
-    const selected = useMemo(() => new Set(value ?? []), [value])
+    const selected = useMemo(() => new Set(value ?? []), [value]);
 
     return (
         <Popover>
@@ -40,9 +40,11 @@ export function MultiSelectFilter({
                     variant="outline"
                     role="combobox"
                     aria-label={`Multi-select ${label}`}
-                    className={cn("justify-between", className)}
+                    className={cn('justify-between', className)}
                 >
-                    {value?.length ? `${value.length} selected` : `Select ${label}`}
+                    {value?.length
+                        ? `${value.length} selected`
+                        : `Select ${label}`}
                     <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>
@@ -52,35 +54,39 @@ export function MultiSelectFilter({
                     <CommandEmpty>No options found.</CommandEmpty>
                     <CommandGroup className="max-h-48 overflow-y-auto">
                         {options.map((opt) => {
-                            const isSelected = selected.has(opt.value)
+                            const isSelected = selected.has(opt.value);
                             return (
                                 <CommandItem
                                     key={opt.value}
                                     onSelect={() => {
-                                        const next = new Set(value ?? [])
+                                        const next = new Set(value ?? []);
                                         if (next.has(opt.value)) {
-                                            next.delete(opt.value)
+                                            next.delete(opt.value);
                                         } else {
-                                            next.add(opt.value)
+                                            next.add(opt.value);
                                         }
-                                        onChange(Array.from(next))
+                                        onChange(Array.from(next));
                                     }}
                                 >
                                     <div
                                         className={cn(
-                                            "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
-                                            isSelected ? "bg-primary text-primary-foreground" : ""
+                                            'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
+                                            isSelected
+                                                ? 'bg-primary text-primary-foreground'
+                                                : '',
                                         )}
                                     >
-                                        {isSelected && <Check className="h-3 w-3" />}
+                                        {isSelected && (
+                                            <Check className="h-3 w-3" />
+                                        )}
                                     </div>
                                     <span>{opt.label}</span>
                                 </CommandItem>
-                            )
+                            );
                         })}
                     </CommandGroup>
                 </Command>
             </PopoverContent>
         </Popover>
-    )
+    );
 }
