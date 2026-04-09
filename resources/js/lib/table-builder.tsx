@@ -1,21 +1,32 @@
-// resources/js/lib/table-builder.tsx
-import { ColumnDef } from "@tanstack/react-table";
-import { Badge } from "@/components/ui/badge";
-import { DataTableColumnHeader } from "@/components/data-table-column-header";
-import { TableSchema, TableColumnSchema } from "@/types/table-schema";
-import { FilterDefinition } from "@/components/data-table-filters";
-import { Button } from "@/components/ui/button";
+import { ColumnDef } from '@tanstack/react-table';
+import { Badge } from '@/components/ui/badge';
+import { DataTableColumnHeader } from '@/components/data-table-column-header';
+import { TableSchema } from '@/types/table-schema';
+import { FilterDefinition } from '@/components/data-table-filters';
+import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
-import { router } from "@inertiajs/react";
+} from '@/components/ui/dropdown-menu';
+import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import * as Icons from 'lucide-react';
 
-// Simple ActionsCell component (inline for now)
-function ActionsCell<TData>({ row, actions }: { row: TData; actions: TableSchema['actions'] }) {
+const Icon = ({ name, className }: { name?: string; className?: string }) => {
+    if (!name) return null;
+    // @ts-ignore - dynamic import from lucide
+    const LucideIcon = Icons[name];
+    return LucideIcon ? <LucideIcon className={className} /> : null;
+};
+
+function ActionsCell<TData>({
+    row,
+    actions,
+}: {
+    row: TData;
+    actions: TableSchema['actions'];
+}) {
     return (
         <div className="text-right">
             <DropdownMenu>
@@ -26,19 +37,15 @@ function ActionsCell<TData>({ row, actions }: { row: TData; actions: TableSchema
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                     {actions?.edit && (
-                        <DropdownMenuItem onClick={() => {
-                            // Replace with actual edit navigation
-                            console.log('Edit', row);
-                        }}>
+                        <DropdownMenuItem
+                            onClick={() => console.log('Edit', row)}
+                        >
                             <Pencil className="mr-2 h-4 w-4" /> Edit
                         </DropdownMenuItem>
                     )}
                     {actions?.delete && (
                         <DropdownMenuItem
-                            onClick={() => {
-                                // Replace with actual delete logic
-                                console.log('Delete', row);
-                            }}
+                            onClick={() => console.log('Delete', row)}
                             className="text-red-600"
                         >
                             <Trash2 className="mr-2 h-4 w-4" /> Delete
@@ -52,7 +59,7 @@ function ActionsCell<TData>({ row, actions }: { row: TData; actions: TableSchema
 
 export function buildColumnsFromSchema<TData>(
     schema: TableSchema,
-    additionalMeta?: Record<string, any>
+    additionalMeta?: Record<string, any>,
 ): ColumnDef<TData>[] {
     const columns: ColumnDef<TData>[] = schema.columns.map((col) => {
         const baseColumn: ColumnDef<TData> = {
@@ -67,48 +74,117 @@ export function buildColumnsFromSchema<TData>(
             },
         };
 
-        if (col.cellType === 'badge') {
+        if (col.cellType === 'currency') {
             baseColumn.cell = ({ row }) => {
-                const value = row.getValue(col.key) as string;
-                let variant: "default" | "secondary" | "outline" = "outline";
-                if (col.key === 'service_type') {
-                    variant = value === 'timeslot' ? 'default' : 'secondary';
+                const value = row.getValue(col.key) as
+                    | number
+                    | string
+                    | null
+                    | undefined;
+
+                if (value === null || value === undefined || value === '') {
+                    return <span className="text-muted-foreground">—</span>;
                 }
-                return <Badge variant={variant} className="capitalize">{value}</Badge>;
-            };
-        } else if (col.cellType === 'currency') {
-            baseColumn.cell = ({ row }) => {
-                const value = row.getValue(col.key) as number;
-                return new Intl.NumberFormat('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                }).format(value);
+
+                const numericValue =
+                    typeof value === 'string' ? parseFloat(value) : value;
+                if (isNaN(numericValue)) {
+                    return <span className="text-muted-foreground">—</span>;
+                }
+
+                const currency = col.currency || 'USD';
+                const rawLocale = col.locale || 'en-US';
+                const locale = rawLocale.replace(/_/g, '-');
+                const prefix = col.prefix || '';
+                const suffix = col.suffix || '';
+                const decimals = col.decimals ?? 2;
+
+                try {
+                    const formatted = new Intl.NumberFormat(locale, {
+                        style: 'currency',
+                        currency,
+                        minimumFractionDigits: decimals,
+                        maximumFractionDigits: decimals,
+                    }).format(numericValue);
+
+                    return (
+                        <span>
+                            {prefix}
+                            {formatted}
+                            {suffix}
+                        </span>
+                    );
+                } catch (e) {
+                    const fallback = `${currency} ${numericValue.toFixed(decimals)}`;
+                    return (
+                        <span>
+                            {prefix}
+                            {fallback}
+                            {suffix}
+                        </span>
+                    );
+                }
             };
         } else if (col.cellType === 'boolean') {
             baseColumn.cell = ({ row }) => {
-                const isActive = row.getValue(col.key) as boolean;
+                const isTrue = row.getValue(col.key) as boolean;
+                const label = isTrue
+                    ? col.trueLabel || 'Active'
+                    : col.falseLabel || 'Inactive';
+                const variant = isTrue
+                    ? col.trueVariant || 'default'
+                    : col.falseVariant || 'secondary';
+                const iconName = isTrue ? col.trueIcon : col.falseIcon;
+
                 return (
-                    <Badge variant={isActive ? "default" : "secondary"}>
-                        {isActive ? 'Active' : 'Inactive'}
+                    <Badge variant={variant as any}>
+                        <Icon name={iconName} className="mr-1 h-3 w-3" />
+                        {label}
                     </Badge>
                 );
             };
-        } else if (col.cellType === 'custom' && col.cellComponent) {
-            const CellComponent = col.cellComponent;
+        } else if (col.cellType === 'badge') {
+            baseColumn.cell = ({ row }) => {
+                const value = row.getValue(col.key) as string;
+                const colorMap = col.colorMap || {};
+                const variant = col.variant || 'outline';
+                const iconName = col.icon;
+                const iconPos = col.iconPosition || 'left';
+
+                const badgeVariant = colorMap[value] || variant;
+
+                return (
+                    <Badge variant={badgeVariant as any} className="capitalize">
+                        {iconName && iconPos === 'left' && (
+                            <Icon name={iconName} className="mr-1 h-3 w-3" />
+                        )}
+                        {value}
+                        {iconName && iconPos === 'right' && (
+                            <Icon name={iconName} className="ml-1 h-3 w-3" />
+                        )}
+                    </Badge>
+                );
+            };
+        } else if (col.cellType === 'custom' && (col as any).cellComponent) {
+            const CellComponent = (col as any).cellComponent;
             baseColumn.cell = ({ row }) => (
-                <CellComponent value={row.getValue(col.key)} row={row.original} />
+                <CellComponent
+                    value={row.getValue(col.key)}
+                    row={row.original}
+                />
             );
         }
 
         return baseColumn;
     });
 
-    // Actions column
     if (schema.actions) {
         columns.push({
             id: 'actions',
             header: () => <div className="text-right">Actions</div>,
-            cell: ({ row }) => <ActionsCell row={row.original} actions={schema.actions} />,
+            cell: ({ row }) => (
+                <ActionsCell row={row.original} actions={schema.actions} />
+            ),
             enableSorting: false,
             meta: { align: 'end' },
         });
@@ -117,22 +193,26 @@ export function buildColumnsFromSchema<TData>(
     return columns;
 }
 
-export function buildFilterDefinitions(schema: TableSchema): FilterDefinition[] {
+export function buildFilterDefinitions(
+    schema: TableSchema,
+): FilterDefinition[] {
+    if (schema.filters) {
+        return schema.filters.map((f) => ({
+            key: f.key,
+            label: f.label,
+            type: f.type,
+            options: f.options,
+        }));
+    }
+
     return schema.columns
-        .filter((col) => col.filterable)
-        .map((col) => {
-            // Map internal filterType to the FilterDefinition's expected type
-            let type: FilterDefinition['type'];
-            if (col.filterType === 'select') {
-                type = 'select';
-            } else {
-                type = 'text'; // default
-            }
-            return {
-                key: col.key,
-                label: col.label,
-                type,
-                options: col.filterOptions,
-            };
-        });
+        .filter((col) => (col as any).filterable)
+        .map((col) => ({
+            key: col.key,
+            label: col.label,
+            type: ((col as any).filterType === 'select'
+                ? 'select'
+                : 'text') as any,
+            options: (col as any).filterOptions,
+        }));
 }

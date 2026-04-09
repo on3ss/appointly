@@ -1,26 +1,47 @@
-import { BulkAction } from "@/components/data-table";
+import { BulkAction } from '@/components/data-table';
 
 export interface TableColumnSchema {
     key: string;
     label: string;
     sortable?: boolean;
-    filterable?: boolean;
-    filterType?: 'text' | 'select' | 'boolean';
-    filterOptions?: Array<{ label: string; value: string }>;
-    cellType?: 'text' | 'badge' | 'currency' | 'boolean' | 'custom';
-    // Additional metadata for custom rendering
+    searchable?: boolean;
+    toggleable?: boolean;
     align?: 'left' | 'center' | 'right';
     width?: string;
-    // For custom cell components
-    cellComponent?: React.ComponentType<{ value: any; row: any }>;
+    cellType?: 'text' | 'badge' | 'currency' | 'boolean' | 'custom';
+
+    currency?: string;
+    locale?: string;
+    prefix?: string;
+    suffix?: string;
+    decimals?: number;
+
+    trueLabel?: string;
+    falseLabel?: string;
+    trueVariant?: string;
+    falseVariant?: string;
+    trueIcon?: string;
+    falseIcon?: string;
+
+    variant?: string;
+    colorMap?: Record<string, string>;
+    icon?: string;
+    iconPosition?: 'left' | 'right';
+}
+
+export interface FilterSchema {
+    key: string;
+    label: string;
+    type: 'text' | 'select';
+    options?: Array<{ label: string; value: string }>;
 }
 
 export interface TableSchema {
     columns: TableColumnSchema[];
+    filters?: FilterSchema[];
     actions?: {
         edit?: boolean;
         delete?: boolean;
-        // custom actions...
     };
     defaultSort?: { key: string; direction: 'asc' | 'desc' };
     bulkActions?: BulkAction<any>[];

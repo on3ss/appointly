@@ -15,7 +15,12 @@ interface IndexProps {
     filters: Record<string, any>;
 }
 
-export default function Index({ currentTeam, services, table, filters }: IndexProps) {
+export default function Index({
+    currentTeam,
+    services,
+    table,
+    filters,
+}: IndexProps) {
     return (
         <>
             <Head title="Services" />
@@ -29,15 +34,18 @@ export default function Index({ currentTeam, services, table, filters }: IndexPr
                 </div>
 
                 <ResourceTable
-                schema={table}
-                data={services}
-                filters={filters}
-                actionButtons={
-                    <Link href={create({ current_team: currentTeam.slug })} className={buttonVariants()}>
-                        Create new
-                    </Link>
-                }
-            />
+                    schema={table}
+                    data={services}
+                    filters={filters}
+                    actionButtons={
+                        <Link
+                            href={create({ current_team: currentTeam.slug })}
+                            className={buttonVariants()}
+                        >
+                            Create new
+                        </Link>
+                    }
+                />
             </div>
         </>
     );

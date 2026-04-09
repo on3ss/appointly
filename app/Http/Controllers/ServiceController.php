@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Service;
-use App\Tables\ServiceTable;
+use App\Tables\Schemas\ServiceTableSchema;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Spatie\QueryBuilder\QueryBuilder;
@@ -12,12 +12,13 @@ class ServiceController extends Controller
 {
     public function index()
     {
-        $table = ServiceTable::define();
+        $schema = new ServiceTableSchema;
 
-        $query = QueryBuilder::for(Service::class)
+        $baseQuery = Service::query()
             ->where('team_id', auth()->user()->currentTeam->id);
 
-        $query = $table->applyToQuery($query);
+        $query = QueryBuilder::for($baseQuery);
+        $query = $schema->applyToQuery($query);
 
         $services = $query
             ->paginate(request()->input('per_page', 10))
@@ -25,7 +26,7 @@ class ServiceController extends Controller
 
         return Inertia::render('services/index', [
             'services' => $services,
-            'table' => $table->toArray(),   // Pass as 'table' instead of 'tableSchema'
+            'table' => $schema->toArray(),
             'filters' => request()->input('filter', []),
         ]);
     }
