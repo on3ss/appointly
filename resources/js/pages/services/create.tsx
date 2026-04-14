@@ -19,12 +19,12 @@ export default function Create({ currentTeam }: { currentTeam: Team }) {
     const defaultValues = useMemo<ServiceFormValues>(
         () => ({
             team_id: teams[0]?.id || 0,
-            name: "",
+            name: '',
             description: null,
             rich_description: null,
-            service_type: "",
+            service_type: '',
             price: 0,
-            settings: "{}",
+            settings: '{}',
             allowed_modes: [],
             location_address: null,
             latitude: null,
@@ -35,28 +35,32 @@ export default function Create({ currentTeam }: { currentTeam: Team }) {
             requires_membership: false,
             is_active: true,
         }),
-        [teams]
+        [teams],
     );
 
     return (
         <>
             <Head title="Create Service" />
 
-            <div className="space-y-6">
+            <div className="space-y-6 p-4">
                 <Heading
                     variant="small"
                     title="Create Service"
                     description="Add a new service to your provider"
                 />
-                <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                    <div className="p-6">
-                        <ServiceForm
-                            defaultValues={defaultValues}
-                            errors={errors}
-                            teams={teams}
-                            onSubmit={(data) => router.post(store({ current_team: currentTeam.slug }), data)}
-                        />
-                    </div>
+                <div className="shadow-sm sm:rounded-lg">
+                    <ServiceForm
+                        defaultValues={defaultValues}
+                        errors={errors}
+                        teams={teams}
+                        // Explicitly type 'data' here:
+                        onSubmit={(data: ServiceFormValues) =>
+                            router.post(
+                                store({ current_team: currentTeam.slug }),
+                                data,
+                            )
+                        }
+                    />
                 </div>
             </div>
         </>
@@ -75,5 +79,5 @@ Create.layout = (props: { currentTeam: { name: string; slug: string } }) => {
                 href: servicesCreate({ current_team: props.currentTeam.slug }),
             },
         ],
-    }
+    };
 };
