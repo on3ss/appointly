@@ -1,3 +1,6 @@
+import { FilterIcon } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
 import {
     Select,
     SelectContent,
@@ -5,14 +8,11 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
-import { Button } from './ui/button';
-import { MultiSelectFilter } from './multi-select';
 import { FilterChip } from './filter-chip';
-import { FilterIcon } from 'lucide-react';
+import { MultiSelectFilter } from './multi-select';
+import { Button } from './ui/button';
 import { Label } from './ui/label';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
 export type FilterDefinition = {
     key: string;
@@ -169,15 +169,16 @@ export function DataTableFilters({
 
             <div>
                 {Object.entries(filters).some(
-                    ([_, v]) => v && v.length !== 0,
+                    ([, v]) => v && v.length !== 0,
                 ) && (
                     <div className="flex flex-wrap gap-2">
                         {Object.entries(filters).map(([key, val]) => {
                             if (
                                 !val ||
                                 (Array.isArray(val) && val.length === 0)
-                            )
-                                return null;
+                            ) {
+return null;
+}
 
                             const def = filterDefinitions.find(
                                 (f) => f.key === key,
@@ -209,6 +210,7 @@ export function DataTableFilters({
                                                     (item: string) =>
                                                         item !== v,
                                                 );
+
                                                 if (remaining.length) {
                                                     newVal[key] = remaining;
                                                 } else {

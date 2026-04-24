@@ -1,15 +1,21 @@
 // DataTable.tsx
-import * as React from 'react';
-import {
+import { router, usePage } from '@inertiajs/react';
+import type {
     ColumnDef,
     SortingState,
     VisibilityState,
-    RowSelectionState,
+    RowSelectionState} from '@tanstack/react-table';
+import {
     flexRender,
     getCoreRowModel,
     useReactTable,
 } from '@tanstack/react-table';
+import { CircleX } from 'lucide-react';
+import * as React from 'react';
 
+import { useMemo, useCallback, useState, useEffect } from 'react';
+import { useDebounceValue } from 'usehooks-ts';
+import { Button } from '@/components/ui/button';
 import {
     Table,
     TableBody,
@@ -19,15 +25,11 @@ import {
     TableRow,
 } from '@/components/ui/table';
 
+import type { PaginatedResponse } from '@/types/response';
+import type { FilterDefinition } from './data-table-filters';
+import { DataTableFilters } from './data-table-filters';
 import { DataTablePagination } from './data-table-pagination';
 import { DataTableViewOptions } from './data-table-view-options';
-import { DataTableFilters, FilterDefinition } from './data-table-filters';
-import { Button } from '@/components/ui/button';
-import { PaginatedResponse } from '@/types/response';
-import { router, usePage } from '@inertiajs/react';
-import { useMemo, useCallback, useState, useEffect } from 'react';
-import { useDebounceValue } from 'usehooks-ts';
-import { CircleX } from 'lucide-react';
 
 export interface BulkAction<TData> {
     label: string;
@@ -97,10 +99,11 @@ export function DataTable<TData, TValue>({
             }
 
             Object.entries(debouncedFilters).forEach(([key, val]) => {
-                if (val && Array.isArray(val))
-                    val.forEach((v) => params.append(`filter[${key}][]`, v));
-                else if (val != null && val !== '')
-                    params.set(`filter[${key}]`, val);
+                if (val && Array.isArray(val)) {
+val.forEach((v) => params.append(`filter[${key}][]`, v));
+} else if (val != null && val !== '') {
+params.set(`filter[${key}]`, val);
+}
             });
 
             params.set('page', String(page));
@@ -116,6 +119,7 @@ export function DataTable<TData, TValue>({
     useEffect(() => {
         if (!hasMounted.current) {
             hasMounted.current = true;
+
             return;
         }
 
@@ -150,6 +154,7 @@ export function DataTable<TData, TValue>({
         [basePath, buildQueryParams],
     );
 
+    // eslint-disable-next-line react-hooks/incompatible-library
     const table = useReactTable({
         data,
         columns,

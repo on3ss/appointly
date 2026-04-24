@@ -1,8 +1,9 @@
-import { ColumnDef } from '@tanstack/react-table';
-import { Badge } from '@/components/ui/badge';
+import type { ColumnDef } from '@tanstack/react-table';
+import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import * as Icons from 'lucide-react';
 import { DataTableColumnHeader } from '@/components/data-table-column-header';
-import { TableSchema } from '@/types/table-schema';
-import { FilterDefinition } from '@/components/data-table-filters';
+import type { FilterDefinition } from '@/components/data-table-filters';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -10,13 +11,16 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
-import * as Icons from 'lucide-react';
+import type { TableSchema } from '@/types/table-schema';
 
 const Icon = ({ name, className }: { name?: string; className?: string }) => {
-    if (!name) return null;
-    // @ts-ignore - dynamic import from lucide
+    if (!name) {
+return null;
+}
+
+    // @ts-expect-error - dynamic import from lucide
     const LucideIcon = Icons[name];
+
     return LucideIcon ? <LucideIcon className={className} /> : null;
 };
 
@@ -88,6 +92,7 @@ export function buildColumnsFromSchema<TData>(
 
                 const numericValue =
                     typeof value === 'string' ? parseFloat(value) : value;
+
                 if (isNaN(numericValue)) {
                     return <span className="text-muted-foreground">—</span>;
                 }
@@ -114,8 +119,9 @@ export function buildColumnsFromSchema<TData>(
                             {suffix}
                         </span>
                     );
-                } catch (e) {
+                } catch {
                     const fallback = `${currency} ${numericValue.toFixed(decimals)}`;
+
                     return (
                         <span>
                             {prefix}
